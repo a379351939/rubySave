@@ -100,12 +100,29 @@ class NFADesign < Struct.new(:start_state, :accept_states, :rulebook)
   end
 end
 
-rulebook = NFARulebook.new([
-  FARule.new(1, 'a', 1), FARule.new(1, 'b', 1), FARule.new(1, 'b', 2),
-  FARule.new(2, 'a', 3), FARule.new(2, 'b', 3),
-  FARule.new(3, 'a', 4), FARule.new(3, 'b', 4)
-])
+class NFARulebook
+  def follow_free_moves(states)
+    more_states = next_states(states, nil)
 
-nfa_design = NFADesign.new(1, [4], rulebook)
+    if more_states.subset?(states)
+      states
+    else
+      follow_free_moves(states + more_states)
+    end
+  end
+end
 
-nfa_design.accepts?('bab')
+class NFA
+  def current_states
+    rulebook.follow_free_moves(super)
+  end
+end
+
+# rulebook = NFARulebook.new([
+#   FARule.new(1, nil, 2), FARule.new(1, nil, 4),
+#   FARule.new(2, 'a', 3),
+#   FARule.new(3, 'a', 2),
+#   FARule.new(4, 'a', 5),
+#   FARule.new(5, 'a', 6),
+#   FARule.new(6, 'a', 4),
+# ])
