@@ -206,3 +206,41 @@ pattern =
      Literal.new('a')
    )
  )
+
+ class Empty
+   def to_nfa_design
+     start_state = Object.new
+     accept_state = [start_state]
+     rulebook = NFARulebook.new([])
+
+     NFADesign.new(start_state, accept_state, rulebook)
+   end
+ end
+
+class Literal
+  def to_nfa_design
+    start_state = Object.new
+    accept_state = Object.new
+    rule = FARule.new(start_state, character, accept_state)
+    rulebook = NFARulebook.new([rule])
+    NFADesign.new(start_state, [accept_state], rulebook)
+  end
+end
+
+module Pattern
+  def matches?(string)
+    to_nfa_design.accepts?(string)
+  end
+end
+
+class Concatenate
+  def to_nfa_design
+    first_nfa_design = first.to_nfa_design
+    second_nfa_design = second.to_nfa_design
+
+    start_state = first_nfa_desgin.start_state
+    accept_states = second_nfa_design.accept_states
+    rules = first_nfa_desgin.rulebook.rules + second_nfa_design.rulebook.rules
+    extra_rules = first_nfa_desgin.accept_state.map
+  end
+end
