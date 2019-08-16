@@ -238,9 +238,14 @@ class Concatenate
     first_nfa_design = first.to_nfa_design
     second_nfa_design = second.to_nfa_design
 
-    start_state = first_nfa_desgin.start_state
+    start_state = first_nfa_design.start_state
     accept_states = second_nfa_design.accept_states
-    rules = first_nfa_desgin.rulebook.rules + second_nfa_design.rulebook.rules
-    extra_rules = first_nfa_desgin.accept_state.map
+    rules = first_nfa_design.rulebook.rules + second_nfa_design.rulebook.rules
+    extra_rules = first_nfa_design.accept_state.map { |state|
+      FARule.new(state, nil, second_nfa_design.start_state)
+    }
+    rulebook = NFARulebook.new(rules + extra_rules)
+
+    NFADesign.new(start_state, accept_states, rulebook)
   end
 end
